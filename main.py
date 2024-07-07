@@ -28,36 +28,21 @@ def store_in_google_sheet(data):
     }
     body = {
         "values": [
-            [data["Name"], data["Email"], data["Comments"]]
+            [data["name"], data["email"], data["comments"]]
         ]
     }
     response = requests.post(url, headers=headers, json=body)
     return response.json()
 
-@app.route('/ask_schedule', methods=['POST'])
-def ask_schedule():
+@app.route('/collect_info', methods=['POST'])
+def collect_info():
     data = request.json
     user_message = data['message']['text']
-    prompt = f"User: {user_message}\nAI: Could you tell me about your daily schedule?"
-    gpt3_response = ask_gpt3(prompt)
-    response = {"messages": [{"text": gpt3_response}]}
-    return jsonify(response)
 
-@app.route('/ask_training_hours', methods=['POST'])
-def ask_training_hours():
-    data = request.json
-    user_message = data['message']['text']
-    prompt = f"User: {user_message}\nAI: How many hours do you spend training each day?"
+    # Generate dietary plan using GPT-3
+    prompt = f"User: {user_message}\nAI: Based on your information, here is a custom dietary plan for you."
     gpt3_response = ask_gpt3(prompt)
-    response = {"messages": [{"text": gpt3_response}]}
-    return jsonify(response)
 
-@app.route('/ask_diet', methods=['POST'])
-def ask_diet():
-    data = request.json
-    user_message = data['message']['text']
-    prompt = f"User: {user_message}\nAI: Do you have any dietary preferences or restrictions?"
-    gpt3_response = ask_gpt3(prompt)
     response = {"messages": [{"text": gpt3_response}]}
     return jsonify(response)
 
@@ -69,9 +54,9 @@ def collect_contact_info():
     comments = data['comments']
 
     user_data = {
-        "Name": user_name,
-        "Email": user_email,
-        "Comments": comments
+        "name": user_name,
+        "email": user_email,
+        "comments": comments
     }
     store_in_google_sheet(user_data)
 
